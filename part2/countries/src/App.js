@@ -1,14 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { countryService } from './services';
 
 import './App.css';
-import {
-  Filter,
-  CountryList,
-  ErrorNotification,
-  CountriesContent,
-} from './components';
+import { Filter, ErrorNotification, CountriesContent } from './components';
 
 function App() {
   const [countries, setCountries] = useState(null);
