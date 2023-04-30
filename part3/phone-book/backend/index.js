@@ -26,8 +26,7 @@ let persons = [
 const PORT = 3001;
 
 function generateId() {
-  const maxId = persons.length > 0 ? Math.max(...persons.map((p) => p.id)) : 0;
-  return maxId++;
+  return Math.floor(Math.random() * 100 * Date.now());
 }
 
 const app = express();
@@ -35,6 +34,14 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>');
+});
+
+app.get('/info', (req, res) => {
+  res.send(
+    `<div><h1>Phonebook has info about ${
+      persons.length
+    } people</h1><p>${new Date().toLocaleDateString()}</p></div>`
+  );
 });
 
 app.get('/api/persons', (req, res) => {
@@ -62,15 +69,15 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
   const { body: reqPerson } = req;
 
-  if (!reqPerson.name) {
+  if (!reqPerson.name && !reqPerson.number) {
     return res.status(400).json({
-      error: 'Person name is missing',
+      error: `Person's name and/or number are missing`,
     });
   }
 
-  if (!reqPerson.number) {
+  if (persons.find((p) => p.name === reqPerson.name)) {
     return res.status(400).json({
-      error: 'You have to specify a number for a person',
+      error: 'Name must be unique',
     });
   }
 
