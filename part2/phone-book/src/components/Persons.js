@@ -1,4 +1,4 @@
-export const Persons = ({ list }) => {
+export const Persons = ({ list, onDelete }) => {
   if (!list.length) {
     return <p>Phonebook is empty</p>;
   }
@@ -7,7 +7,14 @@ export const Persons = ({ list }) => {
     <ul>
       {list.map((i) => (
         <li key={i.id}>
-          {i.name} {i.number}
+          <div
+            style={{ display: 'flex', alignItems: 'center', columnGap: '1rem' }}
+          >
+            <p>
+              {i.name} {i.number}
+            </p>
+            <button onClick={() => onDelete(i)}>delete</button>
+          </div>
         </li>
       ))}
     </ul>
