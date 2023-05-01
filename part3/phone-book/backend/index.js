@@ -2,37 +2,9 @@ require('dotenv').config({ path: './vars/.env' });
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const Person = require('./models/person');
 
 const PORT = process.env.PORT;
-
-let persons = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
-
-function generateId() {
-  return Math.floor(Math.random() * 100 * Date.now());
-}
 
 const app = express();
 
@@ -50,7 +22,9 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>');
 });
 
-app.get('/info', (req, res) => {
+app.get('/info', async (req, res) => {
+  const persons = await Person.find({});
+
   res.send(
     `<div><h1>Phonebook has info about ${
       persons.length
@@ -88,7 +62,11 @@ app.put('/api/persons/:id', (req, res, next) => {
     number: body.number,
   };
 
-  Person.findByIdAndUpdate(id, person, { new: true })
+  Person.findByIdAndUpdate(id, person, {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  })
     .then((updatedPerson) => {
       res.json(updatedPerson);
     })
@@ -102,21 +80,18 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch((e) => next(e));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const { body: reqPerson } = req;
-
-  if (!reqPerson.name && !reqPerson.number) {
-    return res.status(400).json({
-      error: `Person's name and/or number are missing`,
-    });
-  }
 
   const person = new Person({
     name: reqPerson.name,
     number: reqPerson.number,
   });
 
-  person.save().then((savedPerson) => res.json(savedPerson));
+  person
+    .save()
+    .then((savedPerson) => res.json(savedPerson))
+    .catch((e) => next(e));
 });
 
 const unknownEndpoint = (req, res) => {
@@ -129,6 +104,10 @@ const errorHandler = (error, req, res, next) => {
 
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' });
+  }
+
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message });
   }
 
   next(error);
