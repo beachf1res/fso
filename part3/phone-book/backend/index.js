@@ -1,8 +1,11 @@
+require('dotenv').config({ path: './vars/.env' });
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const Person = require('./models/person');
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 let persons = [
   {
@@ -54,18 +57,25 @@ app.get('/info', (req, res) => {
 });
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons);
+  Person.find({}).then((persons) => {
+    res.json(persons);
+  });
 });
 
 app.get('/api/persons/:id', (req, res) => {
   const { id } = req.params;
-  const person = persons.find((p) => p.id === Number(id));
-
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      res.status(400).send({ error: 'Malformed id' });
+    });
 });
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -84,16 +94,12 @@ app.post('/api/persons', (req, res) => {
     });
   }
 
-  if (persons.find((p) => p.name === reqPerson.name)) {
-    return res.status(400).json({
-      error: 'Name must be unique',
-    });
-  }
+  const person = new Person({
+    name: reqPerson.name,
+    number: reqPerson.number,
+  });
 
-  reqPerson.id = generateId();
-  persons.concat(reqPerson);
-
-  res.json(reqPerson);
+  person.save().then((savedPerson) => res.json(savedPerson));
 });
 
 app.listen(PORT, () => {
