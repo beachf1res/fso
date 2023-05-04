@@ -1,0 +1,8 @@
+post http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcnN0IiwiaWQiOiI2NDUzOWU0MDU3NDgxMzZiYmY2ZjUyYmMiLCJpYXQiOjE2ODMyMTA0NTQsImV4cCI6MTY4MzIxNDA1NH0.VjtFwxtjNjv0gLlcHwi9AI8RqzV5YcYjXqq1QU_5Xps
+
+{
+  "title": "Sent with token",
+  "url": "google.com"
+}
