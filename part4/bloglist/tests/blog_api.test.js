@@ -66,6 +66,34 @@ test('blog can be created', async () => {
   expect(titles).toContain('New blog');
 });
 
+test('blog can be deleted', async () => {
+  const { body: blogsBefore } = await api.get('/api/blogs');
+  const blogToRemove = blogsBefore[0];
+
+  await api.delete(`/api/blogs/${blogToRemove.id}`).expect(204);
+  const { body: blogsAfterDeletion } = await api.get('/api/blogs');
+
+  expect(blogsAfterDeletion).toHaveLength(initialBlogs.length - 1);
+
+  const titles = blogsAfterDeletion.map((b) => b.title);
+  expect(titles).not.toContain(blogToRemove.title);
+});
+
+test('blog likes can be updated', async () => {
+  const { body: blogsBefore } = await api.get('/api/blogs');
+  const blogToUpdate = blogsBefore[0];
+
+  const { body: updatedBlog } = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send({
+      ...blogToUpdate,
+      likes: 50,
+    })
+    .expect(200);
+
+  expect(updatedBlog.likes).toBe(50);
+});
+
 test('likes property defaults to 0 if not provided in request', async () => {
   const blogWithoutLikesField = {
     title: 'Blog without likes',
