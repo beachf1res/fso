@@ -6,5 +6,3 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpc
   "title": "Sent with token",
   "url": "google.com"
 }
-
-delete http://localhost:3003/api/blogs/

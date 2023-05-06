@@ -22,9 +22,7 @@ const tokenExtractor = (req, res, next) => {
 };
 
 const userExtractor = (req, res, next) => {
-  if (!req.token) {
-    req.user = null;
-  } else {
+  if (req.token) {
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
     if (!decodedToken || !decodedToken.id) {
       return response.status(401).json({ error: 'Token is invalid' });
@@ -36,6 +34,8 @@ const userExtractor = (req, res, next) => {
         next();
       })
       .catch(next);
+  } else {
+    next();
   }
 };
 

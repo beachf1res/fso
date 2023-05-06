@@ -10,8 +10,9 @@ blogsRouter.get('/', async (req, res) => {
 
 blogsRouter.post('/', async (req, res, next) => {
   const { body, user } = req;
+  console.log(req.token);
   if (!user) {
-    res.status(401).json({ error: 'not authorized' });
+    return res.status(401).json({ error: 'not authorized' });
   }
 
   const blog = new Blog({ ...body, author: user.name, user: user.id });
