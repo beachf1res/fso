@@ -1,4 +1,4 @@
-import { setFilter } from '../reducers/filterReducer';
+import { setFilter } from '../store/reducers/filterReducer';
 import { useDispatch } from 'react-redux';
 
 const Filter = () => {
