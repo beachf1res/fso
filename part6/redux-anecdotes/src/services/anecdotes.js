@@ -20,5 +20,10 @@ const createNew = async (content) => {
   return response.data;
 };
 
-const module = { getAll, createNew };
+const vote = async (id, votes) => {
+  const response = await axios.patch(`${BASE_URL}/${id}`, { votes });
+  return response.data;
+};
+
+const module = { getAll, createNew, vote };
 export default module;

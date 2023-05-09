@@ -6,7 +6,7 @@ export const Anecdote = ({ anecdote, onClick }) => {
       <div>{anecdote.content}</div>
       <div>
         has {anecdote.votes}
-        <button onClick={() => onClick(anecdote.id)}>vote</button>
+        <button onClick={() => onClick(anecdote)}>vote</button>
       </div>
     </div>
   );
